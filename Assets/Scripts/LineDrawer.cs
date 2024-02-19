@@ -12,11 +12,13 @@ public class LineDrawer : MonoBehaviour
 
     public GameObject Dot;
 
+    public GameObject lineParent;
+
     [SerializeField] private GameObject currentLine;
 
     [SerializeField] private float resolution = 0.15f;
 
-    private bool started = false;
+    public bool started = false;
 
     private IEnumerator drawRoutine;
 
@@ -27,6 +29,7 @@ public class LineDrawer : MonoBehaviour
     {
         Time.timeScale = 0f;
         started = false;
+        lineParent = GameObject.FindWithTag("LineParent");
     }
 
     // Update is called once per frame
@@ -36,6 +39,7 @@ public class LineDrawer : MonoBehaviour
         {
             Debug.Log("Mouse Clicked");
             currentLine = Instantiate(Line, Vector3.zero, Quaternion.identity);
+            currentLine.transform.parent = lineParent.transform;
             drawRoutine = Draw();
             StartCoroutine(drawRoutine);
         }
@@ -72,12 +76,14 @@ public class LineDrawer : MonoBehaviour
         
         input.transform.SetParent(parent.transform);*/
         //EdgeCollider2D eCol = input.AddComponent<EdgeCollider2D>();
+        
+        //Creating a dot if there is no connecting line
         if (!isLine)
         {
             Destroy(input);
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = 0;
-            Instantiate(Dot, mousePos, Quaternion.identity);
+            Instantiate(Dot, mousePos, Quaternion.identity, lineParent.transform);
             return;
         }
         
